@@ -17,3 +17,4 @@ if __name__ == '__main__':
             value = int(message.body)
             message.delete()
             to_queue.send_message(str(value + 1))
+            print('{} receive {} from {}'.format(sys.argv[1], value, sys.argv[2]))

@@ -6,10 +6,29 @@ services:
       - "4576:4576"
     environment:
       - SERVICES=sqs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localstack:4576"]
+      interval: 5s
+      timeout: 1s
+      retries: 5
   initialize_queues:
     build: .
     command: ["python3", "initialize_queues.py"]
     depends_on:
       - localstack
+    links:
+      - localstack
+  a_to_b:
+    build: .
+    command: ["bash", "wait_and_run.sh", "A", "B"]
+    depends_on:
+      - initialize_queues
+    links:
+      - localstack
+  b_to_a:
+    build: .
+    command: ["bash", "wait_and_run.sh", "B", "A"]
+    depends_on:
+      - initialize_queues
     links:
       - localstack
