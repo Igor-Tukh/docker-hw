@@ -8,6 +8,8 @@ if __name__ == '__main__':
         print("Got only " + str(len(sys.argv) - 1) + " arguments")
         exit(-1)
 
+    time.sleep(20) # reducing number of exceptions by waiting
+
     sqs = boto3.resource(service_name='sqs', endpoint_url='http://localstack:4576')
      
     from_queue = sqs.get_queue_by_name(QueueName=sys.argv[1])
