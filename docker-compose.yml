@@ -1,0 +1,32 @@
+version: "3.7"
+services:
+  localstack:
+    image: localstack/localstack:0.9.4
+    ports:
+      - "4576:4576"
+    environment:
+      - SERVICES=sqs
+  initialize_queues:
+    build: .
+    command: ["python3", "initialize_queues.py"]
+    restart: on-failure
+    depends_on:
+      - localstack
+    links:
+      - localstack
+  a_to_b:
+    build: .
+    command: ["python3", "increment_and_move.py", "A", "B"]
+    restart: unless-stopped
+    depends_on:
+      - initialize_queues
+    links:
+      - localstack
+  b_to_a:
+    build: .
+    command: ["python3", "increment_and_move.py", "B", "A"]
+    restart: unless-stopped
+    depends_on:
+      - initialize_queues
+    links:
+      - localstack
